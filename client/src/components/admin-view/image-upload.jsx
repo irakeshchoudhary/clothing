@@ -45,22 +45,38 @@ function ProductImageUpload({
     }
   }
 
-  async function uploadImageToCloudinary() {
-    setImageLoadingState(true);
-    const data = new FormData();
-    data.append("my_file", imageFile);
-    const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
-      data
-    );
-    console.log(response, "response");
-
-    if (response?.data?.success) {
-      setUploadedImageUrl(response.data.result.url);
-      setImageLoadingState(false);
+  const uploadImageToCloudinary = async () => {
+    if (!imageFile) {
+      console.error("🚨 No file selected!");
+      return;
     }
-  }
-
+  
+    const data = new FormData();
+    data.append("image", imageFile); // ✅ Field name must match multer config
+  
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/admin/products/upload-image",
+        data,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+  
+      console.log("✅ Image Upload Success:", response.data);
+  
+      if (response.data.imageUrl) {
+        setUploadedImageUrl(response.data.imageUrl); // ✅ Save image URL
+      } else {
+        console.error("❌ Image URL missing in response");
+      }
+    } catch (error) {
+      console.error("🔥 Error uploading image:", error);
+    }
+  };
+  
+  
+  
+  
+  
   useEffect(() => {
     if (imageFile !== null) uploadImageToCloudinary();
   }, [imageFile]);

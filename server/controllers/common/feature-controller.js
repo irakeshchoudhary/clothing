@@ -4,26 +4,28 @@ const addFeatureImage = async (req, res) => {
   try {
     const { image } = req.body;
 
-    console.log(image, "image");
+    if (!image) {
+      return res.status(400).json({ success: false, message: "Image URL is required" });
+    }
 
-    const featureImages = new Feature({
-      image,
-    });
+    const featureImage = new Feature({ image });
 
-    await featureImages.save();
+    await featureImage.save();
 
     res.status(201).json({
       success: true,
-      data: featureImages,
+      data: featureImage,
     });
   } catch (e) {
-    console.log(e);
+    console.error("❌ Error saving feature image:", e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
+
+
 
 const getFeatureImages = async (req, res) => {
   try {

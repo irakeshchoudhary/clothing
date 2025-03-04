@@ -11,14 +11,18 @@ function AdminDashboard() {
   const dispatch = useDispatch();
   const { featureImageList } = useSelector((state) => state.commonFeature);
 
-  console.log(uploadedImageUrl, "uploadedImageUrl");
-
+  console.log(featureImageList, "featureImageList");
   function handleUploadFeatureImage() {
+    if (!uploadedImageUrl) {
+      console.error("🚨 No image URL available!");
+      return;
+    }
+
     dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
       if (data?.payload?.success) {
         dispatch(getFeatureImages());
         setImageFile(null);
-        setUploadedImageUrl("");
+        setUploadedImageUrl(""); // ✅ Reset state after successful upload
       }
     });
   }
@@ -47,13 +51,16 @@ function AdminDashboard() {
       <div className="flex flex-col gap-4 mt-5">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((featureImgItem) => (
-              <div className="relative">
-                <img
-                  src={featureImgItem.image}
-                  className="w-full h-[300px] object-cover rounded-t-lg"
-                />
-              </div>
-            ))
+            console.log(featureImgItem, "featureImgItem"),
+              (
+                <div className="relative">
+                  <img
+                    src={featureImgItem.image}
+                    className="w-full h-[300px] object-cover rounded-t-lg"
+                  />
+                </div>
+              )
+          ))
           : null}
       </div>
     </div>
